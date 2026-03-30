@@ -24,7 +24,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      issues: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -68,7 +67,6 @@ jobs:
           git merge upstream/${{ env.UPSTREAM_BRANCH }} --no-edit
           if [ "${{ github.event.inputs.force_translate }}" = "true" ]; then
             find . -name "*-zh.md" -type f -delete
-            echo "Deleted existing Chinese files"
           fi
 
       - name: Translate files
@@ -80,82 +78,39 @@ jobs:
         run: |
           git config user.name "GitHub Actions"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          TRANSLATED_COUNT=0
-          while IFS= read -r file; do
-            [ -z "$file" ] && continue
-            [ ! -f "$file" ] && continue
-            base=$(basename "$file" .md)
-            dir=$(dirname "$file")
-            zh_file="$dir/${base}-zh.md"
-            [[ "$base" == "LICENSE" ]] && continue
-            echo "Processing: $file"
-            if [ -f "$zh_file" ] && [ "${{ github.event.inputs.force_translate }}" != "true" ]; then
-              echo "  Skip: exists"
-              continue
-            fi
-            if [ -n "$OPENAI_API_KEY" ]; then
-              echo "  Translating..."
-              python3 << 'PYEOF'
-import os
-from openai import OpenAI
+          python3 -c "
+          import os, glob
+          from openai import OpenAI
 
-file = os.environ['file']
-zh_file = os.environ['zh_file']
-api_key = os.environ['OPENAI_API_KEY']
-base_url = os.environ['API_BASE_URL']
+          client = OpenAI(api_key=os.environ['OPENAI_API_KEY'], base_url=os.environ['API_BASE_URL'])
 
-client = OpenAI(api_key=api_key, base_url=base_url)
+          with open('/tmp/changed_md_files.txt') as f:
+              files = [l.strip() for l in f if l.strip()]
 
-with open(file, "r", encoding="utf-8") as f:
-    content = f.read()
-
-chunks = []
-current_chunk = []
-current_length = 0
-MAX_CHUNK_CHARS = 5000
-
-for line in content.split('\n'):
-    if current_length + len(line) > MAX_CHUNK_CHARS and current_chunk:
-        chunks.append('\n'.join(current_chunk))
-        current_chunk = [line]
-        current_length = len(line)
-    else:
-        current_chunk.append(line)
-        current_length += len(line)
-if current_chunk:
-    chunks.append('\n'.join(current_chunk))
-
-translated_parts = []
-for i, chunk in enumerate(chunks):
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {"role": "system", "content": "Translate markdown to Simplified Chinese. Keep links, URLs, code blocks, and formatting intact."},
-            {"role": "user", "content": f"Translate:\n\n{chunk}"}
-        ],
-        temperature=0.3
-    )
-    translated_parts.append(response.choices[0].message.content)
-    print(f"  Chunk {i+1}/{len(chunks)}")
-
-with open(zh_file, "w", encoding="utf-8") as f:
-    f.write('\n'.join(translated_parts))
-print(f"  Done: {zh_file}")
-PYEOF
-              TRANSLATED_COUNT=$((TRANSLATED_COUNT + 1))
-            else
-              cp "$file" "$zh_file"
-            fi
-          done < /tmp/changed_md_files.txt
-          echo "translated_count=$TRANSLATED_COUNT" >> $GITHUB_OUTPUT
+          count = 0
+          for file in files:
+              if not os.path.isfile(file): continue
+              base = os.path.basename(file, '.md')
+              zh_file = os.path.dirname(file) + '/' + base + '-zh.md'
+              if base == 'LICENSE': continue
+              if os.path.exists(zh_file) and '${{ github.event.inputs.force_translate }}' != 'true':
+                  print(f'Skip {file}')
+                  continue
+              print(f'Translating {file}...')
+              with open(file) as f: content = f.read()
+              resp = client.chat.completions.create(model='gpt-4o-mini', messages=[{'role':'system','content':'Translate to Simplified Chinese.Keep URLs and formatting.'},{'role':'user','content':content}],temperature=0.3)
+              with open(zh_file,'w') as f: f.write(resp.choices[0].message.content)
+              print(f'Done: {zh_file}')
+              count += 1
+          print(f'Translated {count} files')
+          "
+          echo "translated_count=$count" >> $GITHUB_OUTPUT
 
       - name: Replace with Chinese
         if: steps.check.outputs.has_changes == 'true'
         run: |
           for base in README CONTRIBUTING; do
-            zh_file="$base-zh.md"
-            en_file="$base.md"
-            [ -f "$zh_file" ] && cp "$zh_file" "$en_file" && echo "Replaced: $en_file"
+            [ -f "$base-zh.md" ] && cp "$base-zh.md" "$base.md" && echo "Replaced: $base.md"
           done
           [ -f ".github/pull_request_template-zh.md" ] && cp ".github/pull_request_template-zh.md" ".github/pull_request_template.md"
 
