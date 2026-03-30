@@ -2,7 +2,7 @@ name: Sync Upstream and Auto Translate
 
 on:
   schedule:
-    - cron: '0 2 * * *'  # 每天 UTC 2:00 执行（北京时间 10:00）
+    - cron: '0 2 * * *'
   workflow_dispatch:
     inputs:
       force_translate:
@@ -26,11 +26,10 @@ jobs:
       contents: write
       issues: write
     steps:
-      - name: Checkout current repo
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Add upstream remote
         run: |
@@ -42,23 +41,14 @@ jobs:
         run: |
           MERGE_BASE=$(git merge-base HEAD upstream/${{ env.UPSTREAM_BRANCH }})
           UPSTREAM_HEAD=$(git rev-parse upstream/${{ env.UPSTREAM_BRANCH }})
-
           if [ "$MERGE_BASE" = "$UPSTREAM_HEAD" ]; then
             echo "has_changes=false" >> $GITHUB_OUTPUT
-            echo "✅ 没有新的上游变更"
+            echo "No upstream changes"
             exit 0
           fi
-
           echo "has_changes=true" >> $GITHUB_OUTPUT
-          echo "📝 发现上游变更"
-
           git diff --name-only "$MERGE_BASE" "$UPSTREAM_HEAD" -- '*.md' ':!LICENSE' ':!*-zh.md' > /tmp/changed_md_files.txt
-
-          echo "变更的文件:"
           cat /tmp/changed_md_files.txt
-
-          FILE_COUNT=$(wc -l < /tmp/changed_md_files.txt)
-          echo "file_count=$FILE_COUNT" >> $GITHUB_OUTPUT
 
       - name: Setup Python
         if: steps.check.outputs.has_changes == 'true'
@@ -68,8 +58,7 @@ jobs:
 
       - name: Install OpenAI SDK
         if: steps.check.outputs.has_changes == 'true'
-        run: |
-          pip install openai
+        run: pip install openai
 
       - name: Pull upstream changes
         if: steps.check.outputs.has_changes == 'true'
@@ -77,13 +66,12 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git merge upstream/${{ env.UPSTREAM_BRANCH }} --no-edit
-
           if [ "${{ github.event.inputs.force_translate }}" = "true" ]; then
             find . -name "*-zh.md" -type f -delete
-            echo "🗑️ 已删除所有已有的中文翻译文件"
+            echo "Deleted existing Chinese files"
           fi
 
-      - name: Translate markdown files with GPT-4o-mini
+      - name: Translate files
         if: steps.check.outputs.has_changes == 'true'
         id: translate
         env:
@@ -92,42 +80,35 @@ jobs:
         run: |
           git config user.name "GitHub Actions"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          CHANGED_FILES=$(cat /tmp/changed_md_files.txt)
           TRANSLATED_COUNT=0
-
-          for file in $CHANGED_FILES; do
-            if [ -f "$file" ]; then
-              base=$(basename "$file" .md)
-              dir=$(dirname "$file")
-              zh_file="$dir/${base}-zh.md"
-
-              if [[ "$base" == "LICENSE" ]]; then
-                continue
-              fi
-
-              echo "📄 处理：$file"
-
-              if [ -f "$zh_file" ] && [ "${{ github.event.inputs.force_translate }}" != "true" ]; then
-                echo "   ⏭️  已存在，跳过：$zh_file"
-                continue
-              fi
-
-              if [ -n "$OPENAI_API_KEY" ]; then
-                echo "   → 使用 GPT-4o-mini 翻译..."
-                python3 - <<PYTHON
-from openai import OpenAI
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            [ ! -f "$file" ] && continue
+            base=$(basename "$file" .md)
+            dir=$(dirname "$file")
+            zh_file="$dir/${base}-zh.md"
+            [[ "$base" == "LICENSE" ]] && continue
+            echo "Processing: $file"
+            if [ -f "$zh_file" ] && [ "${{ github.event.inputs.force_translate }}" != "true" ]; then
+              echo "  Skip: exists"
+              continue
+            fi
+            if [ -n "$OPENAI_API_KEY" ]; then
+              echo "  Translating..."
+              python3 << 'PYEOF'
 import os
+from openai import OpenAI
 
-client = OpenAI(
-    api_key="${{ secrets.OPENAI_API_KEY }}",
-    base_url="$API_BASE_URL"
-)
+file = os.environ['file']
+zh_file = os.environ['zh_file']
+api_key = os.environ['OPENAI_API_KEY']
+base_url = os.environ['API_BASE_URL']
 
-with open("$file", "r", encoding="utf-8") as f:
+client = OpenAI(api_key=api_key, base_url=base_url)
+
+with open(file, "r", encoding="utf-8") as f:
     content = f.read()
 
-# 分块翻译避免 token 限制
 chunks = []
 current_chunk = []
 current_length = 0
@@ -141,7 +122,6 @@ for line in content.split('\n'):
     else:
         current_chunk.append(line)
         current_length += len(line)
-
 if current_chunk:
     chunks.append('\n'.join(current_chunk))
 
@@ -149,96 +129,44 @@ translated_parts = []
 for i, chunk in enumerate(chunks):
     response = client.chat.completions.create(
         model="gpt-4o-mini",
-        messages=[{
-            "role": "system",
-            "content": "You are a professional translator. Translate markdown content to Simplified Chinese (zh-CN). Keep all links, URLs, code blocks, filenames, and formatting intact. Only translate the text content."
-        }, {
-            "role": "user",
-            "content": f"Translate this markdown to Simplified Chinese:\n\n{chunk}"
-        }],
+        messages=[
+            {"role": "system", "content": "Translate markdown to Simplified Chinese. Keep links, URLs, code blocks, and formatting intact."},
+            {"role": "user", "content": f"Translate:\n\n{chunk}"}
+        ],
         temperature=0.3
     )
     translated_parts.append(response.choices[0].message.content)
-    print(f"   完成块 {i+1}/{len(chunks)}")
+    print(f"  Chunk {i+1}/{len(chunks)}")
 
-translated = '\n'.join(translated_parts)
-
-with open("$zh_file", "w", encoding="utf-8") as f:
-    f.write(translated)
-
-print(f"   ✓ 翻译完成：$zh_file")
-PYTHON
-                TRANSLATED_COUNT=$((TRANSLATED_COUNT + 1))
-              else
-                echo "   ⚠️  未配置 OPENAI_API_KEY，复制原文"
-                cp "$file" "$zh_file"
-              fi
+with open(zh_file, "w", encoding="utf-8") as f:
+    f.write('\n'.join(translated_parts))
+print(f"  Done: {zh_file}")
+PYEOF
+              TRANSLATED_COUNT=$((TRANSLATED_COUNT + 1))
+            else
+              cp "$file" "$zh_file"
             fi
-          done
-
+          done < /tmp/changed_md_files.txt
           echo "translated_count=$TRANSLATED_COUNT" >> $GITHUB_OUTPUT
 
-      - name: Replace English files with Chinese
+      - name: Replace with Chinese
         if: steps.check.outputs.has_changes == 'true'
         run: |
-          git config user.name "GitHub Actions"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
           for base in README CONTRIBUTING; do
             zh_file="$base-zh.md"
             en_file="$base.md"
-            if [ -f "$zh_file" ]; then
-              cp "$en_file" "$en_file.en.bak" 2>/dev/null || true
-              cp "$zh_file" "$en_file"
-              echo "🔄 已替换：$en_file (中文版)"
-            fi
+            [ -f "$zh_file" ] && cp "$zh_file" "$en_file" && echo "Replaced: $en_file"
           done
-
-          if [ -f ".github/pull_request_template-zh.md" ]; then
-            cp ".github/pull_request_template.md" ".github/pull_request_template.md.en.bak" 2>/dev/null || true
-            cp ".github/pull_request_template-zh.md" ".github/pull_request_template.md"
-            echo "🔄 已替换：.github/pull_request_template.md (中文版)"
-          fi
+          [ -f ".github/pull_request_template-zh.md" ] && cp ".github/pull_request_template-zh.md" ".github/pull_request_template.md"
 
       - name: Commit and push
         if: steps.check.outputs.has_changes == 'true'
         run: |
           git config user.name "GitHub Actions"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-
           git add -A
-
           if ! git diff --staged --quiet; then
-            git commit -m "chore: sync upstream and auto-translate
-
-            - Sync from: ${{ env.UPSTREAM_REPO }}
-            - Translate to: ${{ env.TRANSLATE_TO }}
-            - Translated files: ${{ steps.translate.outputs.translated_count }}"
-
-            git push origin ${{ env.TARGET_BRANCH }}
-            echo "✅ 推送成功"
-          else
-            echo "ℹ️  没有需要提交的变更"
+            git commit -m "chore: auto-sync and translate"
+            git push
+            echo "Pushed"
           fi
-
-      - name: Close translation issue if exists
-        if: steps.check.outputs.has_changes == 'true' && success()
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const { data: issues } = await github.rest.issues.listForRepo({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              labels: 'translation-needed'
-            });
-
-            for (const issue of issues) {
-              await github.rest.issues.update({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issue.number,
-                state: 'closed'
-              });
-              console.log(`Closed issue #${issue.number}`);
-            }
