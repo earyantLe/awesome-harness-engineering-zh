@@ -1,15 +1,15 @@
-## Summary
+## 摘要
 
-- Add or update resource(s) related to harness engineering
+- 添加或更新控制框架工程相关资源
 
-## Checklist
+## 检查清单
 
-- [ ] The resource is directly relevant to harness engineering
-- [ ] The link works
-- [ ] The resource is not already listed
-- [ ] The description explains the harness angle clearly
-- [ ] The change is placed in the most appropriate section
+- [ ] 该资源与控制框架工程直接相关
+- [ ] 链接有效
+- [ ] 该资源尚未列出
+- [ ] 描述清楚地解释了控制框架角度
+- [ ] 变更放置在最合适的部分
 
-## Notes
+## 说明
 
-Add any context that would help with review.
+添加任何有助于审查的上下文。

@@ -1,60 +1,55 @@
-# Contributing
+# 贡献
 
-Thanks for helping improve Awesome Harness Engineering.
+感谢帮助改进 Awesome Harness Engineering。
 
-## What belongs here
+## 什么属于这里
 
-Please submit resources that are directly useful for designing, evaluating, or
-operating agent harnesses. Good additions usually focus on one or more of:
+请提交直接适用于设计、评估或操作智能体控制框架的资源。好的添加通常专注于以下一个或多个方面：
 
-- Context engineering and working-state management
-- Tool design, tool calling, and environment control
-- Evals, grading, benchmarking, or observability
-- Long-running agents, resumability, retries, or orchestration
-- Repo-local instructions such as `AGENTS.md`, specs, or workflow scaffolding
-- Reference implementations that make harness design inspectable
+- 上下文工程和工作状态管理
+- 工具设计、工具调用和环境控制
+- 评估测试、评分、基准测试或可观测性
+- 长时运行智能体、可恢复性、重试或编排
+- 仓库级指令，如 `AGENTS.md`、规格或工作流脚手架
+- 使控制框架设计可检查的参考实现
 
-Generic AI news, model launch posts, or broad agent-framework marketing pages
-usually do not belong unless they contain concrete harness-level guidance.
+通用的 AI 新闻、模型发布帖子或广泛的智能体框架营销页面通常不属于这里，除非它们包含具体的控制框架级别指导。
 
-## Quality bar
+## 质量标准
 
-When proposing a new entry, prefer resources that are:
+提议新条目时，偏好以下资源：
 
-- Primary sources or original technical write-ups
-- Non-duplicative with an existing entry
-- Still available and reachable
-- Specific enough that the description can explain why the resource matters
+- 主要来源或原创技术文章
+- 与现有条目不重复
+- 仍然可用且可访问
+- 足够具体，能够解释为什么该资源重要
 
-## Entry format
+## 条目格式
 
-Please follow this format:
+请遵循以下格式：
 
 ```md
-- [Name](https://example.com) - Short description focused on why this matters for harness engineering.
+- [名称](https://example.com) - 简短描述，专注于为什么这对控制框架工程重要。
 ```
 
-Keep descriptions concise and practical. Explain the harness angle, not just the
-topic.
+保持描述简洁实用。解释控制框架角度，而不仅仅是主题。
 
-## Placement
+## 放置位置
 
-- Put the entry in the most specific section that fits.
-- If a new section is genuinely needed, keep the section title short and broad
-  enough to support future additions.
-- Avoid adding the same resource to multiple sections.
+- 将条目放在最合适的部分。
+- 如果确实需要新部分，保持部分标题简短且足够宽泛，以支持未来添加。
+- 避免将同一资源添加到多个部分。
 
-## Before opening a PR
+## 开启 PR 之前
 
-- Confirm the link works.
-- Confirm the resource is actually about harness-relevant concerns.
-- Confirm the description is accurate and not promotional.
-- Check for duplicates in the README.
-- Keep the diff focused.
+- 确认链接有效。
+- 确认资源确实是关于控制框架相关关注的。
+- 确认描述准确且具有非推广性。
+- 检查 README 中是否有重复。
+- 保持差异集中。
 
-## Pull requests
+## Pull Requests
 
-Small, focused pull requests are easiest to review.
+小型、集中的 pull request 最容易审查。
 
-If you are adding several links at once, include a short note explaining the
-theme that connects them and why they belong in the chosen section.
+如果要一次性添加多个链接，请附上简短说明，解释连接它们的主题以及为什么它们属于所选部分。
