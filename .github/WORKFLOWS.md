@@ -12,7 +12,7 @@
 
 **功能**：
 - 从上游仓库 `walkinglabs/awesome-harness-engineering` 拉取最新变更
-- 使用 Claude API 自动翻译变更的 markdown 文件为中文
+- 使用 GPT-4o-mini API 自动翻译变更的 markdown 文件为中文
 - 将中文版替换为默认文件（README.md, CONTRIBUTING.md 等）
 - 自动提交并推送
 
@@ -20,7 +20,7 @@
 
 ## API Key 配置
 
-要启用自动翻译功能，需要在 GitHub Secrets 中配置 Claude API Key：
+要启用自动翻译功能，需要在 GitHub Secrets 中配置 API Key：
 
 ### 步骤
 
@@ -30,20 +30,14 @@
 
 | Secret Name | Value |
 |-------------|-------|
-| `ANTHROPIC_API_KEY` | 从 [Anthropic Console](https://console.anthropic.com/settings/keys) 获取 |
+| `OPENAI_API_KEY` | 你的 API Key |
 
-### 获取 Anthropic API Key
+### API 端点配置
 
-1. 访问 https://console.anthropic.com/settings/keys
-2. 点击 **Create Key**
-3. 复制生成的 key（以 `sk-ant-` 开头）
-4. 添加到 GitHub Secrets
-
-### 费用说明
-
-- Claude API 按 token 计费
-- 翻译整个 README 约需 $0.01-0.03（取决于长度）
-- 建议设置每月预算上限
+| 配置项 | 值 |
+|--------|-----|
+| API Base URL | `https://free.v36.cm` |
+| Model | `gpt-4o-mini` |
 
 ---
 
@@ -56,7 +50,7 @@
        ↓
 拉取最新代码
        ↓
-使用 Claude API 翻译
+使用 GPT-4o-mini 翻译
        ↓
 生成 *-zh.md 文件
        ↓

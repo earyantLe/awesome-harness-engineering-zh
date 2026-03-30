@@ -52,7 +52,6 @@ jobs:
           echo "has_changes=true" >> $GITHUB_OUTPUT
           echo "📝 发现上游变更"
 
-          # 获取变更的 markdown 文件
           git diff --name-only "$MERGE_BASE" "$UPSTREAM_HEAD" -- '*.md' ':!LICENSE' ':!*-zh.md' > /tmp/changed_md_files.txt
 
           echo "变更的文件:"
@@ -67,10 +66,10 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install Anthropic SDK
+      - name: Install OpenAI SDK
         if: steps.check.outputs.has_changes == 'true'
         run: |
-          pip install anthropic
+          pip install openai
 
       - name: Pull upstream changes
         if: steps.check.outputs.has_changes == 'true'
@@ -84,11 +83,12 @@ jobs:
             echo "🗑️ 已删除所有已有的中文翻译文件"
           fi
 
-      - name: Translate markdown files with Claude
+      - name: Translate markdown files with GPT-4o-mini
         if: steps.check.outputs.has_changes == 'true'
         id: translate
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          API_BASE_URL: https://free.v36.cm
         run: |
           git config user.name "GitHub Actions"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -113,13 +113,16 @@ jobs:
                 continue
               fi
 
-              if [ -n "$ANTHROPIC_API_KEY" ]; then
-                echo "   → 使用 Claude 翻译..."
+              if [ -n "$OPENAI_API_KEY" ]; then
+                echo "   → 使用 GPT-4o-mini 翻译..."
                 python3 - <<PYTHON
-from anthropic import Anthropic
-import sys
+from openai import OpenAI
+import os
 
-client = Anthropic(api_key="${{ secrets.ANTHROPIC_API_KEY }}")
+client = OpenAI(
+    api_key="${{ secrets.OPENAI_API_KEY }}",
+    base_url="$API_BASE_URL"
+)
 
 with open("$file", "r", encoding="utf-8") as f:
     content = f.read()
@@ -144,25 +147,18 @@ if current_chunk:
 
 translated_parts = []
 for i, chunk in enumerate(chunks):
-    msg = client.messages.create(
-        model="claude-sonnet-4-20250514",
-        max_tokens=4096,
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
         messages=[{
+            "role": "system",
+            "content": "You are a professional translator. Translate markdown content to Simplified Chinese (zh-CN). Keep all links, URLs, code blocks, filenames, and formatting intact. Only translate the text content."
+        }, {
             "role": "user",
-            "content": f"""Translate this markdown content to Simplified Chinese (zh-CN).
-
-Rules:
-- Keep all links, URLs, and formatting intact
-- Only translate text content, not code blocks, filenames, or identifiers
-- Keep markdown structure (headings, lists, bold, italic) exactly the same
-- Preserve all reference-style links and anchor names
-- Translate naturally for Chinese technical readers
-
-Content to translate:
-{chunk}"""
-        }]
+            "content": f"Translate this markdown to Simplified Chinese:\n\n{chunk}"
+        }],
+        temperature=0.3
     )
-    translated_parts.append(msg.content[0].text)
+    translated_parts.append(response.choices[0].message.content)
     print(f"   完成块 {i+1}/{len(chunks)}")
 
 translated = '\n'.join(translated_parts)
@@ -174,7 +170,7 @@ print(f"   ✓ 翻译完成：$zh_file")
 PYTHON
                 TRANSLATED_COUNT=$((TRANSLATED_COUNT + 1))
               else
-                echo "   ⚠️  未配置 ANTHROPIC_API_KEY，复制原文"
+                echo "   ⚠️  未配置 OPENAI_API_KEY，复制原文"
                 cp "$file" "$zh_file"
               fi
             fi
