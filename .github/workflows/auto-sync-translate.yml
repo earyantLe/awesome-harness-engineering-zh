@@ -25,8 +25,6 @@ jobs:
     permissions:
       contents: write
       issues: write
-    outputs:
-      has_changes: ${{ steps.check.outputs.has_changes }}
     steps:
       - name: Checkout current repo
         uses: actions/checkout@v4
@@ -60,7 +58,6 @@ jobs:
           echo "变更的文件:"
           cat /tmp/changed_md_files.txt
 
-          # 统计文件数
           FILE_COUNT=$(wc -l < /tmp/changed_md_files.txt)
           echo "file_count=$FILE_COUNT" >> $GITHUB_OUTPUT
 
@@ -70,10 +67,10 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install DeepL CLI
+      - name: Install Anthropic SDK
         if: steps.check.outputs.has_changes == 'true'
         run: |
-          pip install deepl
+          pip install anthropic
 
       - name: Pull upstream changes
         if: steps.check.outputs.has_changes == 'true'
@@ -82,17 +79,16 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git merge upstream/${{ env.UPSTREAM_BRANCH }} --no-edit
 
-          # 如果是 force_translate，删除所有已有的 -zh.md 文件
           if [ "${{ github.event.inputs.force_translate }}" = "true" ]; then
             find . -name "*-zh.md" -type f -delete
             echo "🗑️ 已删除所有已有的中文翻译文件"
           fi
 
-      - name: Translate markdown files
+      - name: Translate markdown files with Claude
         if: steps.check.outputs.has_changes == 'true'
         id: translate
         env:
-          DEEPL_AUTH_KEY: ${{ secrets.DEEPL_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           git config user.name "GitHub Actions"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -106,42 +102,79 @@ jobs:
               dir=$(dirname "$file")
               zh_file="$dir/${base}-zh.md"
 
-              # 跳过 LICENSE 文件
               if [[ "$base" == "LICENSE" ]]; then
                 continue
               fi
 
               echo "📄 处理：$file"
 
-              # 如果目标文件已存在且不是 force_translate，跳过
               if [ -f "$zh_file" ] && [ "${{ github.event.inputs.force_translate }}" != "true" ]; then
                 echo "   ⏭️  已存在，跳过：$zh_file"
                 continue
               fi
 
-              # 使用 DeepL 翻译（如果有 API key）
-              if [ -n "$DEEPL_AUTH_KEY" ]; then
-                echo "   → 使用 DeepL 翻译..."
+              if [ -n "$ANTHROPIC_API_KEY" ]; then
+                echo "   → 使用 Claude 翻译..."
                 python3 - <<PYTHON
-import deepl
+from anthropic import Anthropic
 import sys
 
-translator = deepl.Translator("${{ secrets.DEEPL_API_KEY }}")
+client = Anthropic(api_key="${{ secrets.ANTHROPIC_API_KEY }}")
 
 with open("$file", "r", encoding="utf-8") as f:
     content = f.read()
 
-# DeepL 有字符限制，分块翻译
-result = translator.translate_text(content, target_lang="ZH")
+# 分块翻译避免 token 限制
+chunks = []
+current_chunk = []
+current_length = 0
+MAX_CHUNK_CHARS = 5000
+
+for line in content.split('\n'):
+    if current_length + len(line) > MAX_CHUNK_CHARS and current_chunk:
+        chunks.append('\n'.join(current_chunk))
+        current_chunk = [line]
+        current_length = len(line)
+    else:
+        current_chunk.append(line)
+        current_length += len(line)
+
+if current_chunk:
+    chunks.append('\n'.join(current_chunk))
+
+translated_parts = []
+for i, chunk in enumerate(chunks):
+    msg = client.messages.create(
+        model="claude-sonnet-4-20250514",
+        max_tokens=4096,
+        messages=[{
+            "role": "user",
+            "content": f"""Translate this markdown content to Simplified Chinese (zh-CN).
+
+Rules:
+- Keep all links, URLs, and formatting intact
+- Only translate text content, not code blocks, filenames, or identifiers
+- Keep markdown structure (headings, lists, bold, italic) exactly the same
+- Preserve all reference-style links and anchor names
+- Translate naturally for Chinese technical readers
+
+Content to translate:
+{chunk}"""
+        }]
+    )
+    translated_parts.append(msg.content[0].text)
+    print(f"   完成块 {i+1}/{len(chunks)}")
+
+translated = '\n'.join(translated_parts)
 
 with open("$zh_file", "w", encoding="utf-8") as f:
-    f.write(result.text)
+    f.write(translated)
 
 print(f"   ✓ 翻译完成：$zh_file")
 PYTHON
                 TRANSLATED_COUNT=$((TRANSLATED_COUNT + 1))
               else
-                echo "   ⚠️  未配置 DEEPL_API_KEY，复制原文"
+                echo "   ⚠️  未配置 ANTHROPIC_API_KEY，复制原文"
                 cp "$file" "$zh_file"
               fi
             fi
@@ -152,16 +185,13 @@ PYTHON
       - name: Replace English files with Chinese
         if: steps.check.outputs.has_changes == 'true'
         run: |
-          # 替换规则：
-          # 1. README-zh.md -> README.md
-          # 2. CONTRIBUTING-zh.md -> CONTRIBUTING.md
-          # 3. .github/pull_request_template-zh.md -> .github/pull_request_template.md
+          git config user.name "GitHub Actions"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
           for base in README CONTRIBUTING; do
             zh_file="$base-zh.md"
             en_file="$base.md"
             if [ -f "$zh_file" ]; then
-              # 保留原文作为备份
               cp "$en_file" "$en_file.en.bak" 2>/dev/null || true
               cp "$zh_file" "$en_file"
               echo "🔄 已替换：$en_file (中文版)"
