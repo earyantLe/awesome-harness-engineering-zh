@@ -141,6 +141,7 @@ These benchmarks are especially useful when you want to compare harness quality,
 - [deepagents](https://github.com/langchain-ai/deepagents) - LangChain's open-source project for building deeper, longer-running agents with middleware and harness patterns.
 - [SWE-agent](https://github.com/SWE-agent/SWE-agent) - A mature research coding agent that makes the harness, prompt, tools, and environment design directly inspectable.
 - [SWE-ReX](https://github.com/SWE-agent/SWE-ReX) - Sandboxed code execution infrastructure for AI agents, useful when harness work starts to merge into execution runtime design.
+- [Mitos](https://github.com/mitos-run/mitos) - Snapshot-fork microVM sandboxes for AI agents that fork a warm environment per session, giving each run a clean isolated starting state with declarative lifecycle control, useful when a harness needs reproducible per-session environments and parallel isolated execution.
 - [AgentKit](https://github.com/inngest/agent-kit) - Inngest's TypeScript toolkit for building durable, workflow-aware agents on top of event-driven infrastructure.
 - [browser-use/browser-harness](https://github.com/browser-use/browser-harness) - A thin CDP-based browser harness that lets agents extend helper functions during execution, useful for inspecting self-healing web-task workflows.
 - [Citadel](https://github.com/SethGammon/Citadel) - A harness for Claude Code and OpenAI Codex with isolated worktrees, multi-agent coordination, and persisted memory and campaign state.
