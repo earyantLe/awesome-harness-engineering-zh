@@ -151,6 +151,8 @@ These benchmarks are especially useful when you want to compare harness quality,
 - [skills.sh](https://skills.sh) - A community marketplace for discovering, sharing, and installing reusable AI agent skills across runtimes like Claude Code and OpenClaw, making harness capabilities portable and composable.
 - [Uni-CLI](https://github.com/olo-dot-io/Uni-CLI) - Universal CLI hub connecting agents to 134 sites and desktop apps via 711 declarative YAML pipelines. Ships an 8-phase Karpathy-style self-repair loop, eval harness with a starter catalog, per-call cost ledger, hardcoded sensitive-path deny list, and `unicli mcp serve` that auto-registers one MCP tool per adapter. ~80 tokens per invocation.
 
+- [calionauta/stelow](https://github.com/calionauta/stelow) — An opinionated agentic product workflow harness that makes AI agents behave less like coding assistants and more like cross-functional product teams. Brings Shape Up methodology to AI coding agents: shapes proposals with IN/OUT boundaries and appetite-driven sizing, validates them through adversarial plan critique with 5 parallel subagents and visual review gates (Plannotator), explores interfaces via appetite-gated ASCII archetypes (1/3/5), and generates typed technical scopes (feature, spike, optimize, test-*) for acceptance-based execution with audit gap-to-scope loops. Ships 25 self-contained skills across 5 strategic approaches, 8 domain tactics, and 5 product workflow stages. CLI-agnostic (Pi, Claude Code, Codex, OpenCode) with optional real-time TUI tracking via Muxy.
+
 ## Contributing
 
 Contributions are welcome. Please prefer resources that are:
