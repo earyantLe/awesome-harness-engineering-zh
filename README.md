@@ -59,6 +59,7 @@ Generic agent tooling is out of scope unless the page directly covers harness de
 - [Humans and Agents in Software Engineering Loops](https://martinfowler.com/articles/exploring-gen-ai/humans-and-agents.html) - A clear mental model for where humans should strengthen the harness instead of micromanaging every artifact.
 - [Claude Code: Best practices for agentic coding](https://code.claude.com/docs) - Anthropic's practical recommendations for repo structure, checkpoints, validation, and delegation in agentic coding workflows.
 - [Lurkr](https://github.com/agentveil-protocol/lurkr) - Static scanner that runs in CI before deploy to surface AI-agent capability risks, including shadow capabilities, credentials into LLM context, eval/subprocess in `@tool`, direct prompt interpolation, and unverified MCP endpoints.
+- [mcp-guardian](https://github.com/S1LV3RJ1NX/mcp-guardian) - An MIT-licensed MCP proxy that swaps full upstream tool lists for three meta-tools (search_tools, get_schema, execute_tool), enabling progressive tool discovery that cuts session-startup context from ~160k to ~456 tokens across 289 real tools, with scope-based allow/block lists and audit logging so blocked tools can't be discovered, inspected, or called.
 
 ## Specs, Agent Files & Workflow Design
 
