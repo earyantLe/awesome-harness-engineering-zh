@@ -133,6 +133,8 @@ These benchmarks are especially useful when you want to compare harness quality,
 
 ## Runtimes, Harnesses & Reference Implementations
 
+- [OpenAgentRelay](https://github.com/ShakespeareLabs/open-agent-relay) - A small, inspectable runtime boundary that starts one existing local agent or automation per request and exposes it as a keyed capability over a trusted LAN. Its target-name verification, JSON output, bounded conversations, and explicit exit codes show how a harness can make remote delegation machine-checkable without distributing the publisher's implementation or credentials.
+
 - [HEAAL](https://github.com/hyun06000/AIL) - Grammar-enforced safety constraints for AI agents via AIL (AI-Intent Language).
 
 - [Agent Frameworks, Runtimes, and Harnesses, Oh My!](https://blog.langchain.com/agent-frameworks-runtimes-and-harnesses-oh-my/) - LangChain's decomposition of what belongs in a framework, a runtime, and a harness.
