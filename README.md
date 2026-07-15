@@ -22,6 +22,7 @@ Generic agent tooling is out of scope unless the page directly covers harness de
 ## Courses & Learning Resources
 
 - [walkinglabs/learn-harness-engineering](https://github.com/walkinglabs/learn-harness-engineering) - A project-based course repository on making Codex and Claude Code more reliable, centered on an Electron personal knowledge base app with lecture handouts, example artifacts, and practical harness projects.
+- [hardness1020/awesome-agent-architecture](https://github.com/hardness1020/awesome-agent-architecture) - Section-by-section architecture notes on how modern agent harnesses work: loop engineering, tool execution, memory, permissions, context delivery, and task orchestration, studied through real systems such as Claude Code and Hermes Agent, with runnable Python demos and trilingual notes (EN / zh-TW / zh-Hans).
 
 ## Foundations
 
