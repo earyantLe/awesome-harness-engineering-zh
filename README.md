@@ -65,6 +65,7 @@ Generic agent tooling is out of scope unless the page directly covers harness de
 - [AGENTS.md](https://github.com/agentsmd/agents.md) - A lightweight open format for repo-local instructions that tell agents how to work inside a codebase.
 - [agent.md](https://github.com/agentmd/agent.md) - A related standardization effort for machine-readable agent instructions across projects and tools.
 - [GitHub Spec Kit](https://github.com/github/spec-kit) - GitHub's toolkit for spec-driven development, useful when you want agents to execute against explicit product and engineering specs.
+- [Context Repository-Driven Development (CRDD)](https://github.com/qual-lab/CRDD) - A repository-centered methodology for preserving product intent, decisions, specifications, evidence, and traceability as durable context while keeping approval authority with humans.
 - [Understanding Spec-Driven-Development: Kiro, spec-kit, and Tessl](https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html) - Thoughtworks on why strong specs make AI-assisted software delivery more dependable.
 - [12 Factor Agents](https://www.humanlayer.dev/blog/12-factor-agents) - HumanLayer's operating principles for production agents, including explicit prompts, state ownership, and clean pause-resume behavior.
 - [12-Factor AgentOps](https://www.12factoragentops.com/) - An operations-oriented companion focused on context discipline, validation, and reproducible agent workflows.
