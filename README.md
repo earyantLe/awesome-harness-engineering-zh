@@ -47,6 +47,7 @@ Generic agent tooling is out of scope unless the page directly covers harness de
 - [Context-Efficient Backpressure for Coding Agents](https://www.humanlayer.dev/blog/context-efficient-backpressure) - HumanLayer's ideas for preventing agents from burning context on noisy or low-value work.
 - [OpenHands Context Condensensation for More Efficient AI Agents](https://openhands.dev/blog/openhands-context-condensensation-for-more-efficient-ai-agents) - OpenHands' design for bounded conversation memory that preserves goals, progress, critical files, and failing tests while keeping long-running coding sessions efficient.
 - [Writing a good CLAUDE.md](https://www.humanlayer.dev/blog/writing-a-good-claude-md) - A practical guide to creating durable, repo-local instructions that agents can repeatedly follow.
+- [wiki](https://github.com/plasma-ai/wiki) - Indexed Markdown knowledge bases that let agents retrieve project context incrementally, with deterministic indexes, scoped CLI access, and merge handling for parallel edits.
 
 ## Constraints, Guardrails & Safe Autonomy
 
