@@ -29,20 +29,16 @@ When proposing a new entry, prefer resources that are:
 ## Self-submissions and commercial promotion
 
 Independent developers may submit an open-source project or original technical
-write-up that they personally create or maintain. Disclose that relationship in
-the pull request so reviewers can evaluate the entry fairly.
+write-up that they personally create or maintain. Companies and their
+representatives may also submit a genuinely open-source project when the entry
+links directly to its public source repository and meets the same technical
+quality bar. Disclose the relationship in the pull request so reviewers can
+evaluate the entry fairly.
 
-We do not accept self-promotional submissions made on behalf of a company,
-startup, vendor, employer, or other commercial organization. This includes
-submissions from founders, employees, contractors, marketing accounts, or other
-representatives promoting their organization's own product or content.
-
-Corporate resources may still be curated by the maintainers or proposed by an
-unaffiliated community member when they are unusually useful and meet the same
-technical quality bar. Affiliation, referral links, campaign parameters, badges,
-sales pages, lead-generation pages, and promotional claims are grounds for
-rejection. Using a personal account does not make an affiliated submission a
-personal project.
+We do not accept company product homepages, sales or lead-generation pages,
+closed-source product promotion, referral links, campaign parameters, badges,
+or promotional claims. A public source repository should make the relevant
+harness design inspectable and clearly state its license.
 
 ## Entry format
 
@@ -71,8 +67,8 @@ topic.
 - Keep the diff focused.
 - Disclose whether you create, maintain, work for, or are otherwise affiliated
   with the submitted resource.
-- Confirm that the submission is not promoting a company or commercial
-  organization you represent.
+- For a company-maintained project, link directly to the public source
+  repository rather than a product or marketing page.
 
 ## Pull requests
 
