@@ -23,6 +23,7 @@ Generic agent tooling is out of scope unless the page directly covers harness de
 
 - [walkinglabs/learn-harness-engineering](https://github.com/walkinglabs/learn-harness-engineering) - A project-based course repository on making Codex and Claude Code more reliable, centered on an Electron personal knowledge base app with lecture handouts, example artifacts, and practical harness projects.
 - [Phelan164/codex-howto](https://github.com/Phelan164/codex-howto) - A Codex-focused engineering curriculum with installable skills, repository instructions, scoped permissions, testing, review, orchestration, and reproducible token measurements for building an inspectable coding-agent harness.
+- [hardness1020/awesome-agent-architecture](https://github.com/hardness1020/awesome-agent-architecture) - Trilingual architecture notes and runnable demos covering agent loops, tool execution, memory, permissions, context delivery, and orchestration.
 
 ## Foundations
 
@@ -49,7 +50,8 @@ Generic agent tooling is out of scope unless the page directly covers harness de
 - [OpenHands Context Condensensation for More Efficient AI Agents](https://openhands.dev/blog/openhands-context-condensensation-for-more-efficient-ai-agents) - OpenHands' design for bounded conversation memory that preserves goals, progress, critical files, and failing tests while keeping long-running coding sessions efficient.
 - [Writing a good CLAUDE.md](https://www.humanlayer.dev/blog/writing-a-good-claude-md) - A practical guide to creating durable, repo-local instructions that agents can repeatedly follow.
 - [Deterministic Context Routing](https://github.com/ai-erp-collab/deterministic-context-routing) - A context-management methodology that routes only the necessary-and-sufficient context to an agent through a deterministic chain (module registry → wiki → session state), cutting overread and context loss on large, under-documented multi-module codebases.
-
+- [DevProjex](https://github.com/Avazbek22/DevProjex) - GUI, TUI, and CLI tooling for selecting and exporting structured codebase context with folder trees, token estimates, ignore rules, and previews.
+- [wiki](https://github.com/plasma-ai/wiki) - Indexed Markdown knowledge bases that give agents incremental project context through deterministic indexes, scoped CLI access, and merge handling for parallel edits.
 
 ## Constraints, Guardrails & Safe Autonomy
 
@@ -64,6 +66,8 @@ Generic agent tooling is out of scope unless the page directly covers harness de
 - [Claude Code: Best practices for agentic coding](https://code.claude.com/docs) - Anthropic's practical recommendations for repo structure, checkpoints, validation, and delegation in agentic coding workflows.
 - [Lurkr](https://github.com/agentveil-protocol/lurkr) - Static scanner that runs in CI before deploy to surface AI-agent capability risks, including shadow capabilities, credentials into LLM context, eval/subprocess in `@tool`, direct prompt interpolation, and unverified MCP endpoints.
 - [Spend rails for autonomous agents: a number, not a vibe](https://joeyycli.github.io/agent-ops-kit-guide/docs/spend-rails-for-autonomous-agents.html) - A concrete pattern for giving a scheduled agent real purchasing authority without real risk: a per-transaction autonomy line, an escalation threshold, a hard lifetime ceiling, and a transaction ledger as the actual enforcement mechanism instead of relying on the model's judgment.
+- [mcp-guardian](https://github.com/S1LV3RJ1NX/mcp-guardian) - MCP proxy for progressive tool discovery, scope-based allow/block lists, and audit logging, reducing startup context while preventing blocked tools from being discovered or called.
+- [Distributed retry patterns: bounding blast radius across a fleet](https://loopandretry.github.io/posts/fleet-retry-patterns/) - Practitioner guidance on concurrency bounds, decorrelated backoff, circuit breakers, and idempotency for preventing agent retry storms.
 
 ## Specs, Agent Files & Workflow Design
 
@@ -87,6 +91,8 @@ Generic agent tooling is out of scope unless the page directly covers harness de
 - [AgentOps](https://github.com/AgentOps-AI/agentops) - Open-source Python SDK for agent monitoring, session replay, cost tracking, benchmarking, and tracing across common LLM and agent frameworks.
 - [agenttrace](https://github.com/luoyuctl/agenttrace) - Local-first TUI/CLI for auditing AI coding-agent session traces, health gates, cost spikes, tool failures, latency gaps, and attempt-to-attempt diffs.
 - [flameox](https://github.com/morluto/flameox) - Profiling and optimization toolkit for agents: bounded CLI and MCP workflows capture traces, preserve native evidence, and compare experiments behind runtime conclusions.
+- [Better Harness](https://github.com/QoderAI/better-harness) - Reviewer for coding-agent workflows that turns repository and session evidence into prioritized, verifiable harness improvements while keeping unobserved behavior explicit.
+- [ax](https://github.com/Necmttn/ax) - Local-first telemetry and memory graph for auditing coding-agent sessions, costs, skills, tool usage, and OTLP events across multiple agent runtimes.
 - [Learning to Verify AI-Generated Code](https://openhands.dev/blog/20260305-learning-to-verify-ai-generated-code) - OpenHands' overview of a layered verification stack using trajectory critics trained on production traces for reranking, early stopping, and review-time quality control.
 - [Demystifying Evals for AI Agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) - Anthropic's guidance on what to measure when agents have many possible trajectories to success or failure.
 - [Quantifying infrastructure noise in agentic coding evals](https://www.anthropic.com/engineering/infrastructure-noise) - Anthropic on how runtime configuration can move coding benchmark scores by more than many leaderboard gaps.
@@ -157,6 +163,28 @@ These benchmarks are especially useful when you want to compare harness quality,
 - [Ralph Wiggum as a Software Engineer](https://ghuntley.com/ralph/) - Geoffrey Huntley's write-up of "Ralph," a minimalist `while :; do cat PROMPT.md | claude-code; done` harness pattern that uses single-task loops, deterministic prompt stacking, and bounded subagent parallelism to drive long-running autonomous coding.
 - [skills.sh](https://skills.sh) - A community marketplace for discovering, sharing, and installing reusable AI agent skills across runtimes like Claude Code and OpenClaw, making harness capabilities portable and composable.
 - [Uni-CLI](https://github.com/olo-dot-io/Uni-CLI) - Universal CLI hub connecting agents to 134 sites and desktop apps via 711 declarative YAML pipelines. Ships an 8-phase Karpathy-style self-repair loop, eval harness with a starter catalog, per-call cost ledger, hardcoded sensitive-path deny list, and `unicli mcp serve` that auto-registers one MCP tool per adapter. ~80 tokens per invocation.
+- [SandBase Harness](https://github.com/sandbaseai/sandbase-harness) - Apache-2.0 agent runtime with persistent sessions, governed MCP tools, credential handling, audit and replay, and interchangeable local or sandboxed execution backends.
+- [OpenViking](https://github.com/volcengine/OpenViking) - Context database that unifies agent memory, knowledge retrieval, and skills behind an MCP-accessible storage layer.
+- [DSH Studio](https://github.com/Moresyl/dsh-studio) - Cross-platform desktop host for DeepSeek Harness with health probes, restart backoff, collision-free ports, and whole-process-tree cleanup.
+- [RailWarden](https://github.com/advaith-1212/railwarden) - Deterministic control plane for multi-agent software work with dependency-aware packages, isolated worktrees, durable validation evidence, recovery checkpoints, and integration gates.
+- [Orkas](https://github.com/Orkas-AI/Orkas) - Local-first desktop harness for coordinating multiple agents with shared files, independent work contexts, human approval gates, and resumable execution.
+- [Agentlas OS](https://github.com/agentlas-ai/Agentlas-OS) - Local-first agent operation environment that composes specialist teams while retaining host-local tools, permissions, memory boundaries, and verification rules.
+- [OpenAgentRelay](https://github.com/ShakespeareLabs/open-agent-relay) - Inspectable runtime boundary for exposing a local agent or automation as a keyed LAN capability with target verification, bounded conversations, JSON output, and explicit exit codes.
+- [stelow](https://github.com/calionauta/stelow) - Agentic product-workflow harness with Shape Up boundaries, adversarial plan review, acceptance-based execution contracts, and audit loops.
+- [BrowserAct](https://github.com/browser-act/skills) - Open-source browser automation layer for agents with isolated parallel sessions, multi-account operation, and human handoff when automation is blocked.
+- [Mitos](https://github.com/mitos-run/mitos) - Snapshot-fork microVM sandboxes that give agent sessions clean, isolated starting states with declarative lifecycle control and parallel execution.
+- [OpenCode Agent Orchestration Kit](https://github.com/jcarlosrodicio/opencode-agent-orchestration-kit) - Reproducible OpenCode harness with role-based agents, explicit handoffs, repo-local skills, safe installation, and mechanical contract validation.
+- [Build A Harness](https://github.com/3IVIS/buildaharness) - Apache-2.0 visual canvas for agent harnesses that compiles a runtime-neutral FlowSpec to several orchestration frameworks.
+- [LoopTroop](https://github.com/looptroop-ai/LoopTroop) - Local-first GUI harness for long-running coding work with multi-model planning, isolated worktrees, and fresh-context recovery loops.
+- [Agent AFK](https://github.com/griffinwork40/agent-afk) - Headless coding-agent harness for asynchronous runs with explicit terminal states, editable lifecycle hooks, permission gates, model routing, and append-only traces.
+- [completely](https://github.com/23ag1/completely) - Claude Code plugin harness with a default-fail evaluator, deterministic write and close gates, orphan recovery, and parallel-worker integration checks.
+- [BitRouter](https://github.com/bitrouter/bitrouter) - Apache-2.0 model router with cross-protocol routing, MCP gateway, guardrails, observability, virtual keys, and multi-account failover.
+- [forge-harness](https://github.com/chrono-meta/forge-harness) - Claude Code plugin for adversarial validation, source-grounding audits, session-learning capture, and pre-deployment transfer simulation.
+- [agent-harness](https://github.com/ar27111994/agent-harness) - Reproducible lifecycle for coding-agent assets with authority-ranked discovery, pinned mirrors, quarantine routing, staged activation, and host-specific wiring.
+- [Squadron](https://github.com/mlund01/squadron) - MIT-licensed declarative runtime for multi-agent workflows defined in HCL, including orchestration, state, dependency resolution, routing, persistence, and resume.
+- [codex-profiles](https://github.com/Ducksss/codex-profiles) - Codex CLI and Desktop profile launcher that isolates authentication, configuration, sessions, connectors, plugins, and logs by `CODEX_HOME`.
+- [Cowork Forge](https://github.com/sopaco/cowork-forge) - MIT-licensed multi-agent software-development workflow with specialized roles and a staged pipeline from requirements through delivery.
+- [AgentPlane](https://github.com/basilisk-labs/agentplane) - Git-native workflow-control harness that stores task records, policy, verification evidence, and closure state as reviewable repository artifacts.
 
 ## Contributing
 
