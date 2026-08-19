@@ -53,8 +53,8 @@ topic.
 
 ## Placement
 
-- Put the entry in the most specific section that fits.
-- If a new section is genuinely needed, keep the section title short and broad
+- Put the entry in the most specific existing section or subsection that fits.
+- If a new subsection is genuinely needed, keep its title short and broad
   enough to support future additions.
 - Avoid adding the same resource to multiple sections.
 

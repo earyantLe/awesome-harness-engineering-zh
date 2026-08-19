@@ -8,7 +8,7 @@
 - [ ] The link works
 - [ ] The resource is not already listed
 - [ ] The description explains the harness angle clearly
-- [ ] The change is placed in the most appropriate section
+- [ ] The change is placed in the most appropriate section or subsection
 - [ ] I disclosed below whether I create, maintain, work for, or am otherwise
       affiliated with the submitted resource
 - [ ] If this is a company-maintained project, the entry links directly to its
